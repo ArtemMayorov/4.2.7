@@ -36,19 +36,11 @@ function addCard(event) {
 
 // получает репозитории и передает в асинхронную функцию createSearchOption
 async function getRepos (value) {
-    return await fetch(`https://api.github.com/search/repositories?q=${value}&per_page=5`)
-    .then(res => {
-        return res.json()
-    })
-    .then((res) => {
-        res.items.forEach(elem => {
-            createSearchOption(elem)
-        })
-    })
-    .catch(error => {
-        console.log(error.message);
-    })
-}
+     await fetch(`https://api.github.com/search/repositories?q=${value}&per_page=5`)
+    .then(repoList => repoList.json())
+    .then((repoList) => repoList.items.forEach(repo => createSearchOption(repo)))
+    .catch(err => console.log(err.message));
+};
 
 
  function createSearchOption(answer){
