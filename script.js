@@ -1,8 +1,8 @@
+const body = document.querySelector('body');
 const listForCards = document.querySelector('.list');
 const searchForm = document.querySelector('.search');
 
 const searchField = document.querySelector('.search__field')
-
 let repositArray = [];
 
 // createCard - создает новую карточку 
@@ -12,6 +12,15 @@ let repositArray = [];
 //createAutocompliteElems - принимает массив и создает автоподсказки
 // получает репозитории и передает в асинхронную функцию createSearchOption
 
+
+body.addEventListener('click',(event) => {
+    const className = event.target.className;
+    if(className !== 'search__field'||
+       className !== 'search__item'){
+        clearAutocomplite()
+       }
+
+})
 searchForm.addEventListener('click', addCard)
 function addCard (event) {
     const evTar = event.target;
@@ -19,6 +28,8 @@ function addCard (event) {
         const cardId = +event.target.id;
         repositArray.forEach(repo => {
             if(cardId === repo['id']) {
+                searchField.value = '';
+                clearAutocomplite()
                 createCard(
                     repo['name'],
                     repo['owner']['login'],
@@ -31,7 +42,7 @@ function addCard (event) {
 
 const debounce = (fn, ms) => {
     let timeout;
-    return function () {
+    return function (...arguments) {
       const fnCall = () => { fn.apply(this, arguments) }
       clearTimeout(timeout);
       timeout = setTimeout(fnCall, ms)
@@ -39,16 +50,16 @@ const debounce = (fn, ms) => {
   }
 const checkFieldIsEmptyTimeout = debounce(checkFieldIsEmpty, 1000)
 function testDeleteAutocomp(event){
-    console.log(event.target.value === '');
     if(event.target.value === ''){
         if(document.querySelector('.search__list')){
             document.querySelector('.search__list').remove()    
         }
-    }
-    
-}
+    }  
+};
 searchField.addEventListener('keyup',checkFieldIsEmptyTimeout)
 searchField.addEventListener('keyup',testDeleteAutocomp)
+searchField.addEventListener('focusout',testDeleteAutocomp)
+searchField.addEventListener('focus',checkFieldIsEmptyTimeout)
 
 function checkFieldIsEmpty(event){
     evTarget = event.target
@@ -96,7 +107,7 @@ async function getRepos (value) {
             fragment.appendChild(item)
         });
     if(searchList) return searchList.append(fragment);
-     return ;
+     return;
 }
 
 
